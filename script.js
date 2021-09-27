@@ -25,10 +25,10 @@ var offSet = 0;
 document.addEventListener('keydown', (event) => {
   var name = event.key;
   if (name === 'ArrowLeft') {
-    offSet = 0.001;
+    offSet = 0.007;
   }
   if (name === 'ArrowRight') {
-    offSet = -0.001;
+    offSet = -0.007;
   }
 }, false);
 
@@ -158,7 +158,7 @@ function animate() {
 
   drawGrass();
   drawRoad();
-  ctx.drawImage(carSprite, 510 - playerX, 250, 180, 180);
+  ctx.drawImage(carSprite, 510, 250, 180, 180);
   requestAnimationFrame(animate)
 }
 
