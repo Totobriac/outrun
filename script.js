@@ -54,7 +54,6 @@ function populatePoints() {
     for (let j = 0; j < sections[i]; j++) {
       j < sections[i] / 2 ? newC += C : newC -= C;
       j < sections[i] / 2 ? newS += S : newS -= S;
-      console.log(newS)
       points.push(new Segment(newZ, newC, newS))
       newZ += 100
     }
@@ -79,9 +78,9 @@ function calculateY() {
 function drawRoad() {
   for (let i = 1; i < points.length; i++) {
     if (points[i].z < 2500) {
-      i % 2 === 0 ? ctx.fillStyle = "#A9A9A9" : ctx.fillStyle = "#E8E8E8";
+      i % 5 === 0 ? ctx.fillStyle = "#969696" : ctx.fillStyle = "#969696";
       ctx.beginPath();
-      ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope );
+      ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
       ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
       ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
       ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
@@ -89,27 +88,31 @@ function drawRoad() {
       ctx.fill();
     }
     if (points[i].z < 2500) {
-      i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
-      ctx.beginPath();
-      ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].roadMark - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-      ctx.lineTo((canvas.width - points[i].length) / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-      ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-      ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].roadMark - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-      ctx.closePath();
-      ctx.fill();
+      if (points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
+        i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].roadMark - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i].length) / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].roadMark - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
+        ctx.closePath();
+        ctx.fill();
+      }
     }
     if (points[i].z < 2500) {
-      i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
-      ctx.beginPath();
-      ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-      ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length + points[i].roadMark - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-      ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length + points[i - 1].roadMark - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-      ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-      ctx.closePath();
-      ctx.fill();
+      if (points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
+        i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length + points[i].roadMark - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length + points[i - 1].roadMark - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
+        ctx.closePath();
+        ctx.fill();
+      }
     }
     if (points[i].z < 2500) {
-      if (i % 2 === 0) {
+      if (i % 2 === 0 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         ctx.fillStyle = "white";
         ctx.beginPath();
         ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length / 2 - points[i].middleLine / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
@@ -143,6 +146,9 @@ function update() {
     if (points[i].z > 0) {
       points[i].z -= speed;
       playerX += offSet;
+    }
+    else {
+      points.slice(i, 1);
     }
   }
 }
