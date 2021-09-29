@@ -4,6 +4,28 @@ var ctx = canvas.getContext('2d');
 var carSprite = new Image();
 carSprite.src = "./red_coupe.png";
 
+var skySprite = new Image();
+skySprite.src = "./sky_race_1200.png";
+
+var rocksSprite = new Image();
+rocksSprite.src = "./rocks.png";
+
+var groundSprite_1 = new Image();
+groundSprite_1.src = "./ground_1_600.png";
+
+var groundSprite_2 = new Image();
+groundSprite_2.src = "./ground_2_600.png";
+
+var groundSprite_3 = new Image();
+groundSprite_3.src = "./ground_3_600.png";
+
+var cloudSprite_1 = new Image();
+cloudSprite_1.src = "./clouds_1_sm.png";
+
+var cloudSprite_2 = new Image();
+cloudSprite_2.src = "./clouds_2.png";
+
+
 canvas.width = 1200;
 canvas.height = 400;
 
@@ -14,7 +36,7 @@ camera = {
 
 var roadLength = 1600;
 var roadWidth = 800;
-var speed = 20;
+var speed = 50;
 var roadMark = 45;
 var middleLine = 20;
 points = [];
@@ -47,7 +69,7 @@ function populatePoints() {
   }
 
   for (let i = 0; i < sections.length; i++) {
-    var C = - 3 + (Math.floor(Math.random() * 6));
+    var C = - 2 + (Math.floor(Math.random() * 4));
     var S = - 5 + (Math.floor(Math.random() * 10));
     var newC = 0;
     var newS = 0;
@@ -129,7 +151,7 @@ function drawRoad() {
 function drawGrass() {
   for (let i = 1; i < points.length; i++) {
     if (points[i].z < 2500) {
-      i % 2 === 0 ? ctx.fillStyle = "#179516" : ctx.fillStyle = "#0B740B";
+      i % 2 === 0 ? ctx.fillStyle = "#193042" : ctx.fillStyle = "#12273B";
       ctx.beginPath();
       ctx.moveTo(0, points[i].y - points[i].slope);
       ctx.lineTo(canvas.width, points[i].y - points[i].slope);
@@ -161,8 +183,23 @@ function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   update();
   calculateY();
-  ctx.fillStyle = "#3752A0";
-  ctx.fillRect(0, 0, canvas.width, 400);
+  ctx.drawImage(skySprite, 0, 150, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(cloudSprite_1, 0, 0, canvas.width, canvas.height, 600, 100, 400, 100);
+  ctx.drawImage(rocksSprite, 360, 350, canvas.width, canvas.height, 0, 50, canvas.width, canvas.height);
+  ctx.drawImage(cloudSprite_1, 0, 0, canvas.width, canvas.height, 400, 120, 200, 50);
+
+  ctx.drawImage(groundSprite_1, 300 - playerX * 0.05, 0, 300 + playerX * 0.05, 338, 0, 0, 300 + playerX * 0.05, 338);
+  ctx.drawImage(groundSprite_1, 0, 0, 600, 338, 300 + playerX * 0.05, 0, 600, 338);
+  ctx.drawImage(groundSprite_1, 0, 0, 300, 338, 900 + playerX * 0.05, 0, 300, 338);
+
+  ctx.drawImage(groundSprite_2, 300 - playerX * 0.1, 0, 300 + playerX * 0.1, 338, 0, 0, 300 + playerX * 0.1, 338);
+  ctx.drawImage(groundSprite_2, 0, 0, 600, 338, 300 + playerX * 0.1, 0, 600, 338);
+  ctx.drawImage(groundSprite_2, 0, 0, 300, 338, 900 + playerX * 0.1, 0, 300, 338);
+
+  ctx.drawImage(groundSprite_3, 300 - playerX * 0.2, 0, 300 + playerX * 0.2, 338, 0, 0, 300 + playerX * 0.2, 338);
+  ctx.drawImage(groundSprite_3, 0, 0, 600, 338, 300 + playerX * 0.2, 0, 600, 338);
+  ctx.drawImage(groundSprite_3, 0, 0, 300, 338, 900 + playerX * 0.2, 0, 300, 338);
+
   drawGrass();
   drawRoad();
   ctx.drawImage(carSprite, 510, 250, 180, 180);
@@ -175,7 +212,6 @@ document.addEventListener('keydown', (event) => {
   var name = event.key;
   if (name === 'ArrowLeft') {
     offSet = 0.005;
-    console.log(playerX)
   }
   if (name === 'ArrowRight') {
     offSet = -0.005;
