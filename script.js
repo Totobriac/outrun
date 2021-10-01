@@ -38,11 +38,10 @@ camera = {
 }
 
 var roadLength = 1600;
-var roadWidth = 800;
-var speed = 50;
+var roadWidth = 1200;
+var speed = 10;
 var roadMark = 45;
 var middleLine = 20;
-var tree = 300;
 var newZ = 100;
 var playerX = 0;
 var offSet = 0;
@@ -50,6 +49,7 @@ points = [];
 
 class Segment {
   constructor(z, c, s) {
+    this.x = 0
     this.y = 0;
     this.length = 0;
     this.roadMark = 0;
@@ -58,7 +58,6 @@ class Segment {
     this.z = z;
     this.curve = c;
     this.slope = s;
-    this.tree = 0;
   }
 }
 
@@ -73,10 +72,9 @@ function populatePoints() {
   }
 
   for (let i = 0; i < sections.length; i++) {
-    // var C = - 2 + (Math.floor(Math.random() * 4));
-    var C = 0;
-    // var S = - 5 + (Math.floor(Math.random() * 10));
-    var S = 0;
+    var C = - 2 + (Math.floor(Math.random() * 4));
+    var S = - 5 + (Math.floor(Math.random() * 10));
+    // S= 0;
     var newC = 0;
     var newS = 0;
     for (let j = 0; j < sections[i]; j++) {
@@ -100,7 +98,9 @@ function calculateY() {
     points[i].length = roadWidth * points[i].scale;
     points[i].roadMark = roadMark * points[i].scale;
     points[i].middleLine = middleLine * points[i].scale;
-    points[i].tree = tree * points[i].scale;
+    points[i].xR = 1100 * points[i].scale;
+    points[i].xL = -400 * points[i].scale;
+    points[i].offset = playerX * points[i].scale;
   }
 }
 
@@ -109,10 +109,10 @@ function drawRoad() {
     if (points[i].z < 2500) {
       i % 5 === 0 ? ctx.fillStyle = "#969696" : ctx.fillStyle = "#969696";
       ctx.beginPath();
-      ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-      ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-      ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-      ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
+      ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
+      ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + points[i].offset, points[i].y - points[i].slope);
+      ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
+      ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
       ctx.closePath();
       ctx.fill();
     }
@@ -120,10 +120,10 @@ function drawRoad() {
       if (points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
         ctx.beginPath();
-        ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].roadMark - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-        ctx.lineTo((canvas.width - points[i].length) / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-        ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-        ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].roadMark - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
+        ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].roadMark - points[i].curve + points[i].offset, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i].length) / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].roadMark - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
         ctx.closePath();
         ctx.fill();
       }
@@ -132,10 +132,10 @@ function drawRoad() {
       if (points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
         ctx.beginPath();
-        ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-        ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length + points[i].roadMark - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length + points[i - 1].roadMark - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
+        ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + points[i].offset, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length + points[i].roadMark - points[i].curve + points[i].offset, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length + points[i - 1].roadMark - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
         ctx.closePath();
         ctx.fill();
       }
@@ -144,14 +144,15 @@ function drawRoad() {
       if (i % 2 === 0 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         ctx.fillStyle = "white";
         ctx.beginPath();
-        ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length / 2 - points[i].middleLine / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-        ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length / 2 + points[i].middleLine / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length / 2 + points[i - 1].middleLine / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length / 2 - points[i - 1].middleLine / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
+        ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length / 2 - points[i].middleLine / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length / 2 + points[i].middleLine / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length / 2 + points[i - 1].middleLine / 2 - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
+        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length / 2 - points[i - 1].middleLine / 2 - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
         ctx.closePath();
         ctx.fill();
       }
     }
+
   }
 }
 
@@ -164,32 +165,24 @@ function drawGrass() {
       ctx.lineTo(canvas.width, points[i].y - points[i].slope);
       ctx.lineTo(canvas.width, points[i - 1].y - points[i - 1].slope);
       ctx.lineTo(0, points[i - 1].y - points[i - 1].slope);
-      ctx.closePath(); 
+      ctx.closePath();
       ctx.fill();
     }
   }
 }
 
-function plantTree() {
-  for (let i = 1; i < points.length; i++) {
-    if (i % 5 == 0) {
-      if (points[i].z < 3000) {
-        ctx.fillStyle = "green";
-        ctx.beginPath();
-        ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length / 2 - points[i].middleLine / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-        ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length / 2 + points[i].middleLine / 2 - points[i].curve + playerX * points[i].scale, points[i].y - points[i].slope);
-        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length / 2 + points[i - 1].middleLine / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-        ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length / 2 - points[i - 1].middleLine / 2 - points[i - 1].curve + playerX * points[i - 1].scale, points[i - 1].y - points[i - 1].slope);
-        ctx.closePath();
-        ctx.fill();
-      }
+function drawTrees() {
+  for (let i = 0; i < points.length; i++) {
+    if (points[i].z < 2200 && i % 4 === 0) {
+      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xR + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 4), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
+      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xL + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 4), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
     }
   }
 }
 
 function update() {
   for (let i = 0; i < points.length; i++) {
-    if (points[i].z > 0) {
+    if (points[i].z > 100) {
       points[i].z -= speed;
       playerX += offSet;
     }
@@ -226,11 +219,10 @@ function animate() {
 
   drawGrass();
   drawRoad();
+  drawTrees();
   ctx.drawImage(carSprite, 510, 250, 180, 180);
 
-  plantTree();
-
-  requestAnimationFrame(animate)
+  requestAnimationFrame(animate);
 }
 
 animate();
