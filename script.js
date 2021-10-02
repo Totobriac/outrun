@@ -39,7 +39,7 @@ camera = {
 
 var roadLength = 1600;
 var roadWidth = 1200;
-var speed = 10;
+var speed = 50;
 var roadMark = 45;
 var middleLine = 20;
 var newZ = 100;
@@ -81,7 +81,7 @@ function populatePoints() {
       j < sections[i] / 2 ? newC += C : newC -= C;
       j < sections[i] / 2 ? newS += S : newS -= S;
       points.push(new Segment(newZ, newC, newS))
-      newZ += 100
+      newZ += 120
     }
   }
 }
@@ -98,15 +98,15 @@ function calculateY() {
     points[i].length = roadWidth * points[i].scale;
     points[i].roadMark = roadMark * points[i].scale;
     points[i].middleLine = middleLine * points[i].scale;
-    points[i].xR = 1100 * points[i].scale;
-    points[i].xL = -400 * points[i].scale;
+    points[i].xR = 1300 * points[i].scale;
+    points[i].xL = -700 * points[i].scale;
     points[i].offset = playerX * points[i].scale;
   }
 }
 
 function drawRoad() {
   for (let i = 1; i < points.length; i++) {
-    if (points[i].z < 2500) {
+    if (points[i].z < 4500) {
       i % 5 === 0 ? ctx.fillStyle = "#969696" : ctx.fillStyle = "#969696";
       ctx.beginPath();
       ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -116,7 +116,7 @@ function drawRoad() {
       ctx.closePath();
       ctx.fill();
     }
-    if (points[i].z < 2500) {
+    if (points[i].z < 4500) {
       if (points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
         ctx.beginPath();
@@ -128,7 +128,7 @@ function drawRoad() {
         ctx.fill();
       }
     }
-    if (points[i].z < 2500) {
+    if (points[i].z < 4500) {
       if (points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
         ctx.beginPath();
@@ -140,8 +140,8 @@ function drawRoad() {
         ctx.fill();
       }
     }
-    if (points[i].z < 2500) {
-      if (i % 2 === 0 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
+    if (points[i].z < 4500) {
+      if (i % 6 === 0 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         ctx.fillStyle = "white";
         ctx.beginPath();
         ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length / 2 - points[i].middleLine / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -158,7 +158,7 @@ function drawRoad() {
 
 function drawGrass() {
   for (let i = 1; i < points.length; i++) {
-    if (points[i].z < 2500) {
+    if (points[i].z < 4500) {
       i % 2 === 0 ? ctx.fillStyle = "#193042" : ctx.fillStyle = "#12273B";
       ctx.beginPath();
       ctx.moveTo(0, points[i].y - points[i].slope);
@@ -173,9 +173,9 @@ function drawGrass() {
 
 function drawTrees() {
   for (let i = 0; i < points.length; i++) {
-    if (points[i].z < 2200 && i % 4 === 0) {
-      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xR + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 4), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
-      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xL + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 4), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
+    if (points[i].z < 3200 && i % 10 === 0 && points[i].z > 100 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
+      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xR + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 3.5), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
+      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xL + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 3.5), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
     }
   }
 }
