@@ -44,10 +44,10 @@ var roadMark = 45;
 var middleLine = 20;
 var newZ = 100;
 var playerX = 0;
-var offSet = 0;
+offset = 0;
 points = [];
 treePoints = [];
-var treePoints = []
+
 
 class Segment {
   constructor(z, c, s) {
@@ -60,11 +60,30 @@ class Segment {
     this.z = z;
     this.curve = c;
     this.slope = s;
+    this.offset = 0;
+  }
+  calculateY() {
+    this.y = ((camera.height + this.slope) * dY) / this.z + canvas.height / 2;
+    this.scale = dY / this.z;
+    this.offset = playerX * this.scale;
+    this.length = roadWidth * this.scale;
+    this.roadMark = roadMark * this.scale;
+    this.middleLine = middleLine * this.scale;
+    this.xR = 1300 * this.scale;
+    this.xL = -700 * this.scale;   
+  }
+  update(i) {
+    playerX += offset;
+    if (this.z > 100) {
+      this.z -= speed;      
+    }
+    else {
+      points.slice(i, 1);
+    }
   }
 }
 
 function populatePoints() {
-
   var sum = 0;
   var sections = [];
   while (sum < 2500) {
@@ -72,11 +91,9 @@ function populatePoints() {
     sum += sectionLength;
     sections.push(sectionLength);
   }
-
   for (let i = 0; i < sections.length; i++) {
     var C = - 2 + (Math.floor(Math.random() * 4));
     var S = - 5 + (Math.floor(Math.random() * 10));
-    // S= 0;
     var newC = 0;
     var newS = 0;
     for (let j = 0; j < sections[i]; j++) {
@@ -93,19 +110,6 @@ function populatePoints() {
 function calculateDY(FOV) {
   var dY = (canvas.height / 2) / Math.tan((FOV / 2 * Math.PI) / 180);
   return dY;
-}
-
-function calculateY() {
-  for (let i = 0; i < points.length; i++) {
-    points[i].y = ((camera.height + points[i].slope) * dY) / points[i].z + canvas.height / 2;
-    points[i].scale = dY / points[i].z;
-    points[i].length = roadWidth * points[i].scale;
-    points[i].roadMark = roadMark * points[i].scale;
-    points[i].middleLine = middleLine * points[i].scale;
-    points[i].xR = 1300 * points[i].scale;
-    points[i].xL = -700 * points[i].scale;
-    points[i].offset = playerX * points[i].scale;
-  }
 }
 
 function drawRoad() {
@@ -156,8 +160,26 @@ function drawRoad() {
         ctx.fill();
       }
     }
-
   }
+}
+
+function drawBackground() {
+  ctx.drawImage(skySprite, 0, 150, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(cloudSprite_1, 0, 0, canvas.width, canvas.height, 600, 100, 400, 100);
+  ctx.drawImage(rocksSprite, 360, 350, canvas.width, canvas.height, 0, 50, canvas.width, canvas.height);
+  ctx.drawImage(cloudSprite_1, 0, 0, canvas.width, canvas.height, 400, 120, 200, 50);
+
+  ctx.drawImage(groundSprite_1, 300 - playerX * 0.05, 0, 300 + playerX * 0.05, 338, 0, 0, 300 + playerX * 0.05, 338);
+  ctx.drawImage(groundSprite_1, 0, 0, 600, 338, 300 + playerX * 0.05, 0, 600, 338);
+  ctx.drawImage(groundSprite_1, 0, 0, 300, 338, 900 + playerX * 0.05, 0, 300, 338);
+
+  ctx.drawImage(groundSprite_2, 300 - playerX * 0.1, 0, 300 + playerX * 0.1, 338, 0, 0, 300 + playerX * 0.1, 338);
+  ctx.drawImage(groundSprite_2, 0, 0, 600, 338, 300 + playerX * 0.1, 0, 600, 338);
+  ctx.drawImage(groundSprite_2, 0, 0, 300, 338, 900 + playerX * 0.1, 0, 300, 338);
+
+  ctx.drawImage(groundSprite_3, 300 - playerX * 0.15, 0, 300 + playerX * 0.15, 338, 0, 0, 300 + playerX * 0.15, 338);
+  ctx.drawImage(groundSprite_3, 0, 0, 600, 338, 300 + playerX * 0.15, 0, 600, 338);
+  ctx.drawImage(groundSprite_3, 0, 0, 300, 338, 900 + playerX * 0.15, 0, 300, 338);
 }
 
 function drawGrass() {
@@ -184,60 +206,34 @@ function drawTrees() {
   }
 }
 
-function update() {
-  for (let i = 0; i < points.length; i++) {
-    if (points[i].z > 100) {
-      points[i].z -= speed;
-      playerX += offSet;
-    }
-    else {
-      points.slice(i, 1);
-    }
-  }
-}
-
 var dY = calculateDY(camera.FOV);
 
 populatePoints();
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  update();
-  calculateY();
-  ctx.drawImage(skySprite, 0, 150, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-  ctx.drawImage(cloudSprite_1, 0, 0, canvas.width, canvas.height, 600, 100, 400, 100);
-  ctx.drawImage(rocksSprite, 360, 350, canvas.width, canvas.height, 0, 50, canvas.width, canvas.height);
-  ctx.drawImage(cloudSprite_1, 0, 0, canvas.width, canvas.height, 400, 120, 200, 50);
-
-  ctx.drawImage(groundSprite_1, 300 - playerX * 0.05, 0, 300 + playerX * 0.05, 338, 0, 0, 300 + playerX * 0.05, 338);
-  ctx.drawImage(groundSprite_1, 0, 0, 600, 338, 300 + playerX * 0.05, 0, 600, 338);
-  ctx.drawImage(groundSprite_1, 0, 0, 300, 338, 900 + playerX * 0.05, 0, 300, 338);
-
-  ctx.drawImage(groundSprite_2, 300 - playerX * 0.1, 0, 300 + playerX * 0.1, 338, 0, 0, 300 + playerX * 0.1, 338);
-  ctx.drawImage(groundSprite_2, 0, 0, 600, 338, 300 + playerX * 0.1, 0, 600, 338);
-  ctx.drawImage(groundSprite_2, 0, 0, 300, 338, 900 + playerX * 0.1, 0, 300, 338);
-
-  ctx.drawImage(groundSprite_3, 300 - playerX * 0.15, 0, 300 + playerX * 0.15, 338, 0, 0, 300 + playerX * 0.15, 338);
-  ctx.drawImage(groundSprite_3, 0, 0, 600, 338, 300 + playerX * 0.15, 0, 600, 338);
-  ctx.drawImage(groundSprite_3, 0, 0, 300, 338, 900 + playerX * 0.15, 0, 300, 338);
-
+  for (let i = 0; i < points.length; i++) {
+    points[i].calculateY();
+    points[i].update(i);
+  }
+  drawBackground();
   drawGrass();
   drawRoad();
   drawTrees();
   ctx.drawImage(carSprite, 510, 250, 180, 180);
-
   requestAnimationFrame(animate);
 }
 
 animate();
 
+
 document.addEventListener('keydown', (event) => {
   var name = event.key;
   if (name === 'ArrowLeft') {
-    offSet = 0.005;
+    offset = 0.008;
   }
   if (name === 'ArrowRight') {
-    offSet = -0.005;
+    offset = -0.008;
   }
 }, false);
 
