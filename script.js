@@ -46,6 +46,8 @@ var newZ = 100;
 var playerX = 0;
 var offSet = 0;
 points = [];
+treePoints = [];
+var treePoints = []
 
 class Segment {
   constructor(z, c, s) {
@@ -80,7 +82,9 @@ function populatePoints() {
     for (let j = 0; j < sections[i]; j++) {
       j < sections[i] / 2 ? newC += C : newC -= C;
       j < sections[i] / 2 ? newS += S : newS -= S;
-      points.push(new Segment(newZ, newC, newS))
+      var point = new Segment(newZ, newC, newS);
+      points.push(point);
+      treePoints.unshift(point);
       newZ += 120
     }
   }
@@ -106,7 +110,7 @@ function calculateY() {
 
 function drawRoad() {
   for (let i = 1; i < points.length; i++) {
-    if (points[i].z < 4500) {
+    if (points[i].z < 4500 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
       i % 5 === 0 ? ctx.fillStyle = "#969696" : ctx.fillStyle = "#969696";
       ctx.beginPath();
       ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -172,10 +176,10 @@ function drawGrass() {
 }
 
 function drawTrees() {
-  for (let i = 0; i < points.length; i++) {
-    if (points[i].z < 3200 && i % 10 === 0 && points[i].z > 100 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
-      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xR + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 3.5), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
-      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xL + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 3.5), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
+  for (let i = 0; i < treePoints.length; i++) {
+    if (i % 10 === 0 && treePoints[i].z < 3200 && treePoints[i].z > 100 && treePoints[i].y - treePoints[i].slope >= treePoints[i - 1].y - treePoints[i - 1].slope) {
+      ctx.drawImage(treesSprite, canvas.width / 2 - treePoints[i].xR + treePoints[i].offset - treePoints[i].curve, treePoints[i].y - treePoints[i].slope - (treesSprite.height * treePoints[i].scale * 3.5), treesSprite.width * treePoints[i].scale * 4, treesSprite.height * treePoints[i].scale * 4)
+      ctx.drawImage(treesSprite, canvas.width / 2 - treePoints[i].xL + treePoints[i].offset - treePoints[i].curve, treePoints[i].y - treePoints[i].slope - (treesSprite.height * treePoints[i].scale * 3.5), treesSprite.width * treePoints[i].scale * 4, treesSprite.height * treePoints[i].scale * 4)
     }
   }
 }
