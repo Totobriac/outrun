@@ -228,21 +228,22 @@ animate();
 
 
 document.addEventListener('keydown', (event) => {
+  if (event.repeat) return;
   var name = event.key;
   if (name === 'ArrowLeft') {
-    offset = 0.008;
+    offset += 0.008;
   }
   if (name === 'ArrowRight') {
-    offset = -0.008;
+    offset += -0.008;
   }
 }, false);
 
 document.addEventListener('keyup', (event) => {
   var name = event.key;
   if (name === 'ArrowLeft') {
-    offSet = 0;
+    offset = 0;
   }
   if (name === 'ArrowRight') {
-    offSet = 0;
+    offset = 0;
   }
 }, false);
