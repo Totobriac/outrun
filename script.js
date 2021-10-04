@@ -90,7 +90,7 @@ function populatePoints() {
   }
   for (let i = 0; i < sections.length; i++) {
     var C = - 2 + (Math.floor(Math.random() * 4));
-    var S = - 5 + (Math.floor(Math.random() * 10));
+    var S = - 5 + (Math.floor(Math.random() * 12));
     var newC = 0;
     var newS = 0;
     for (let j = 0; j < sections[i]; j++) {
@@ -110,7 +110,7 @@ function calculateDY(FOV) {
 
 function drawRoad() {
   for (let i = 1; i < points.length; i++) {
-    if (points[i].z < 4500) { 
+    if (points[i].z < 5200) { 
       i % 5 === 0 ? ctx.fillStyle = "#969696" : ctx.fillStyle = "#969696";
       ctx.beginPath();
       ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -120,7 +120,7 @@ function drawRoad() {
       ctx.closePath();
       ctx.fill();
     }
-    if (points[i].z < 4500) {
+    if (points[i].z < 5200) {
         i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
         ctx.beginPath();
         ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].roadMark - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -130,7 +130,7 @@ function drawRoad() {
         ctx.closePath();
         ctx.fill();
     }
-    if (points[i].z < 4500) {
+    if (points[i].z < 5200) {
         i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
         ctx.beginPath();
         ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -140,7 +140,7 @@ function drawRoad() {
         ctx.closePath();
         ctx.fill();
     }
-    if (points[i].z < 4500) {
+    if (points[i].z < 5200) {
       if (i % 6 === 0 ) {
         ctx.fillStyle = "white";
         ctx.beginPath();
@@ -176,7 +176,7 @@ function drawBackground() {
 
 function drawGrass() {
   for (let i = 1; i < points.length; i++) {
-    if (points[i].z < 4500) {
+    if (points[i].z < 5200) {
       i % 2 === 0 ? ctx.fillStyle = "#193042" : ctx.fillStyle = "#12273B";
       ctx.beginPath();
       ctx.moveTo(0, points[i].y - points[i].slope);
@@ -191,7 +191,7 @@ function drawGrass() {
 
 function drawTrees() {
   for (let i = 0; i < points.length; i++) {
-    if (i % 10 === 0 && points[i].z < 4200 && points[i].z > 100 && points[i].y - points[i].slope >= points[i - 1].y - points[i - 1].slope) {
+    if (i % 10 === 0 && points[i].z < 5200 && points[i].z > 100 && points[i].y - points[i].slope >= points[i - 1].y - points[i - 1].slope) {
       ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xR + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 3.5), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
       ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xL + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 3.5), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
     }
