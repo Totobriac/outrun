@@ -46,7 +46,6 @@ var newZ = 100;
 var playerX = 0;
 offset = 0;
 points = [];
-treePoints = [];
 
 
 class Segment {
@@ -62,7 +61,7 @@ class Segment {
     this.slope = s;
     this.offset = 0;
   }
-  calculateY() {
+  update(i) {
     this.y = ((camera.height + this.slope) * dY) / this.z + canvas.height / 2;
     this.scale = dY / this.z;
     this.offset = playerX * this.scale;
@@ -70,9 +69,7 @@ class Segment {
     this.roadMark = roadMark * this.scale;
     this.middleLine = middleLine * this.scale;
     this.xR = 1300 * this.scale;
-    this.xL = -700 * this.scale;   
-  }
-  update(i) {
+    this.xL = -700 * this.scale;
     playerX += offset;
     if (this.z > 100) {
       this.z -= speed;      
@@ -100,8 +97,7 @@ function populatePoints() {
       j < sections[i] / 2 ? newC += C : newC -= C;
       j < sections[i] / 2 ? newS += S : newS -= S;
       var point = new Segment(newZ, newC, newS);
-      points.push(point);
-      treePoints.unshift(point);
+      points.unshift(point)
       newZ += 120
     }
   }
@@ -114,7 +110,7 @@ function calculateDY(FOV) {
 
 function drawRoad() {
   for (let i = 1; i < points.length; i++) {
-    if (points[i].z < 4500 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
+    if (points[i].z < 4500) { 
       i % 5 === 0 ? ctx.fillStyle = "#969696" : ctx.fillStyle = "#969696";
       ctx.beginPath();
       ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -125,7 +121,6 @@ function drawRoad() {
       ctx.fill();
     }
     if (points[i].z < 4500) {
-      if (points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
         ctx.beginPath();
         ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].roadMark - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -134,10 +129,8 @@ function drawRoad() {
         ctx.lineTo((canvas.width - points[i - 1].length) / 2 - points[i - 1].roadMark - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
         ctx.closePath();
         ctx.fill();
-      }
     }
     if (points[i].z < 4500) {
-      if (points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
         i % 2 === 0 ? ctx.fillStyle = "white" : ctx.fillStyle = "red";
         ctx.beginPath();
         ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -146,10 +139,9 @@ function drawRoad() {
         ctx.lineTo((canvas.width - points[i - 1].length) / 2 + points[i - 1].length - points[i - 1].curve + points[i - 1].offset, points[i - 1].y - points[i - 1].slope);
         ctx.closePath();
         ctx.fill();
-      }
     }
     if (points[i].z < 4500) {
-      if (i % 6 === 0 && points[i].y - points[i].slope <= points[i - 1].y - points[i - 1].slope) {
+      if (i % 6 === 0 ) {
         ctx.fillStyle = "white";
         ctx.beginPath();
         ctx.moveTo((canvas.width - points[i].length) / 2 + points[i].length / 2 - points[i].middleLine / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -198,10 +190,10 @@ function drawGrass() {
 }
 
 function drawTrees() {
-  for (let i = 0; i < treePoints.length; i++) {
-    if (i % 10 === 0 && treePoints[i].z < 3200 && treePoints[i].z > 100 && treePoints[i].y - treePoints[i].slope >= treePoints[i - 1].y - treePoints[i - 1].slope) {
-      ctx.drawImage(treesSprite, canvas.width / 2 - treePoints[i].xR + treePoints[i].offset - treePoints[i].curve, treePoints[i].y - treePoints[i].slope - (treesSprite.height * treePoints[i].scale * 3.5), treesSprite.width * treePoints[i].scale * 4, treesSprite.height * treePoints[i].scale * 4)
-      ctx.drawImage(treesSprite, canvas.width / 2 - treePoints[i].xL + treePoints[i].offset - treePoints[i].curve, treePoints[i].y - treePoints[i].slope - (treesSprite.height * treePoints[i].scale * 3.5), treesSprite.width * treePoints[i].scale * 4, treesSprite.height * treePoints[i].scale * 4)
+  for (let i = 0; i < points.length; i++) {
+    if (i % 10 === 0 && points[i].z < 4200 && points[i].z > 100 && points[i].y - points[i].slope >= points[i - 1].y - points[i - 1].slope) {
+      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xR + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 3.5), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
+      ctx.drawImage(treesSprite, canvas.width / 2 - points[i].xL + points[i].offset - points[i].curve, points[i].y - points[i].slope - (treesSprite.height * points[i].scale * 3.5), treesSprite.width * points[i].scale * 4, treesSprite.height * points[i].scale * 4)
     }
   }
 }
@@ -213,13 +205,13 @@ populatePoints();
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let i = 0; i < points.length; i++) {
-    points[i].calculateY();
     points[i].update(i);
   }
   drawBackground();
   drawGrass();
-  drawRoad();
   drawTrees();
+
+  drawRoad();
   ctx.drawImage(carSprite, 510, 250, 180, 180);
   requestAnimationFrame(animate);
 }
