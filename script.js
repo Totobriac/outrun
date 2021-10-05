@@ -27,8 +27,12 @@ cloudSprite_2.src = "./clouds_2.png";
 
 var treesSprite = new Image();
 treesSprite.src = "./trees_sprite_sheet.png";
-//treesSprite.src = "./single_tree.png";
 
+var boarSprite = new Image();
+boarSprite.src= "./boars.png";
+
+var boarSpriteR = new Image();
+boarSpriteR.src= "./boars_right.png";
 
 canvas.width = 1200;
 canvas.height = 400;
@@ -40,7 +44,7 @@ camera = {
 
 var roadLength = 1600;
 var roadWidth = 1200;
-var speed = 50;
+var speed = 30;
 var roadMark = 45;
 var middleLine = 20;
 var newZ = 100;
@@ -53,7 +57,7 @@ var treeSprite = [{ x: 0, width: 50 }, { x: 50, width: 50 }, { x: 100, width: 60
 
 
 class Segment {
-  constructor(z, c, s, sR, sL, xR, xL) {
+  constructor(z, c, s, sR, sL, xR, xL, bX) {
     this.x = 0
     this.y = 0;
     this.length = 0;
@@ -68,6 +72,7 @@ class Segment {
     this.treeSpriteL = sL;
     this.treeXr = xR;
     this.treeXl = xL;
+    this.boarX = bX;
   }
   update(i) {
     this.y = ((camera.height + this.slope) * dY) / this.z + canvas.height / 2;
@@ -106,9 +111,10 @@ function populatePoints() {
       var sL = treeSprite[Math.floor(Math.random() * 10)];
       var xR = 1200 + Math.floor(Math.random() * 700);
       var xL = - 700 - Math.floor(Math.random() * 700);
+      var bX = - 60 + Math.floor(Math.random() * 120);
       j < sections[i] / 2 ? newC += C : newC -= C;
       j < sections[i] / 2 ? newS += S : newS -= S;
-      var point = new Segment(newZ, newC, newS, sR, sL, xR, xL);
+      var point = new Segment(newZ, newC, newS, sR, sL, xR, xL, bX);
       points.unshift(point)
       newZ += 120
     }
@@ -210,6 +216,16 @@ function drawTrees() {
   }
 }
 
+function drawBoars() {
+  for (let i = 0; i < points.length; i++) {
+    if (i % 7 === 0 && points[i].z < 2200 && points[i].z > 100) {
+      points[i].boarX < 0 
+        ? ctx.drawImage(boarSpriteR, 768, 0, 192, 192, canvas.width / 2 + points[i].boarX + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
+        : ctx.drawImage(boarSprite, 0, 0, 192, 192, canvas.width / 2 + points[i].boarX + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
+    }
+  }
+}
+
 var dY = calculateDY(camera.FOV);
 
 populatePoints();
@@ -222,8 +238,9 @@ function animate() {
   drawBackground();
   drawGrass();
   drawTrees();
-
+  
   drawRoad();
+  drawBoars();
   ctx.drawImage(carSprite, 510, 250, 180, 180);
   requestAnimationFrame(animate);
 }
