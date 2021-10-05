@@ -29,10 +29,10 @@ var treesSprite = new Image();
 treesSprite.src = "./trees_sprite_sheet.png";
 
 var boarSprite = new Image();
-boarSprite.src= "./boars.png";
+boarSprite.src = "./boars.png";
 
 var boarSpriteR = new Image();
-boarSpriteR.src= "./boars_right.png";
+boarSpriteR.src = "./boars_right.png";
 
 canvas.width = 1200;
 canvas.height = 400;
@@ -57,7 +57,7 @@ var treeSprite = [{ x: 0, width: 50 }, { x: 50, width: 50 }, { x: 100, width: 60
 
 
 class Segment {
-  constructor(z, c, s, sR, sL, xR, xL, bX) {
+  constructor(z, c, s, sR, sL, xR, xL, bX, bS, rR) {
     this.x = 0
     this.y = 0;
     this.length = 0;
@@ -73,6 +73,8 @@ class Segment {
     this.treeXr = xR;
     this.treeXl = xL;
     this.boarX = bX;
+    this.boarS = bS;
+    this.runRight = rR;
   }
   update(i) {
     this.y = ((camera.height + this.slope) * dY) / this.z + canvas.height / 2;
@@ -84,6 +86,9 @@ class Segment {
     this.xR = this.treeXr * this.scale;
     this.xL = this.treeXl * this.scale;
     playerX += offset;
+    if (this.boarX > 500) this.runRight = false;
+    if (this.boarX < -900) this.runRight = true;
+    this.runRight === true ? this.boarX += this.boarS : this.boarX -= this.boarS;
     if (this.z > 100) {
       this.z -= speed;
     }
@@ -111,14 +116,18 @@ function populatePoints() {
       var sL = treeSprite[Math.floor(Math.random() * 10)];
       var xR = 1200 + Math.floor(Math.random() * 700);
       var xL = - 700 - Math.floor(Math.random() * 700);
-      var bX = - 60 + Math.floor(Math.random() * 120);
+      var bX = [-900, 500][Math.floor(Math.random() * 2)];
+      var rR;
+      bX === -900 ? rR = true : rR = false;
+      var bS = 2 + Math.floor(Math.random() * 14);
       j < sections[i] / 2 ? newC += C : newC -= C;
       j < sections[i] / 2 ? newS += S : newS -= S;
-      var point = new Segment(newZ, newC, newS, sR, sL, xR, xL, bX);
+      var point = new Segment(newZ, newC, newS, sR, sL, xR, xL, bX, bS, rR);
       points.unshift(point)
       newZ += 120
     }
   }
+  console.log(points)
 }
 
 function calculateDY(FOV) {
@@ -219,9 +228,11 @@ function drawTrees() {
 function drawBoars() {
   for (let i = 0; i < points.length; i++) {
     if (i % 7 === 0 && points[i].z < 2200 && points[i].z > 100) {
-      points[i].boarX < 0 
-        ? ctx.drawImage(boarSpriteR, 768, 0, 192, 192, canvas.width / 2 + points[i].boarX + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
-        : ctx.drawImage(boarSprite, 0, 0, 192, 192, canvas.width / 2 + points[i].boarX + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
+      points[i].runRight === true 
+      //? ctx.drawImage(boarSpriteR, 768, 0, 192, 192, canvas.width / 2 + points[i].boarX + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
+      //: ctx.drawImage(boarSprite, 0, 0, 192, 192, canvas.width / 2 + points[i].boarX + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
+      ? ctx.drawImage(boarSpriteR, 768, 0, 192, 192, canvas.width / 2 + (points[i].boarX * points[i].scale) + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
+      : ctx.drawImage(boarSprite, 0, 0, 192, 192, canvas.width / 2 + (points[i].boarX * points[i].scale) + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
     }
   }
 }
@@ -238,7 +249,6 @@ function animate() {
   drawBackground();
   drawGrass();
   drawTrees();
-  
   drawRoad();
   drawBoars();
   ctx.drawImage(carSprite, 510, 250, 180, 180);
