@@ -44,7 +44,7 @@ camera = {
 
 var roadLength = 1600;
 var roadWidth = 1200;
-var speed = 30;
+var speed = 20;
 var roadMark = 45;
 var middleLine = 20;
 var newZ = 100;
@@ -75,6 +75,7 @@ class Segment {
     this.boarX = bX;
     this.boarS = bS;
     this.runRight = rR;
+    this.hasBoar = false;
   }
   update(i) {
     this.y = ((camera.height + this.slope) * dY) / this.z + canvas.height / 2;
@@ -89,7 +90,7 @@ class Segment {
     if (this.boarX > 500) this.runRight = false;
     if (this.boarX < -900) this.runRight = true;
     this.runRight === true ? this.boarX += this.boarS : this.boarX -= this.boarS;
-    if (this.z > 100) {
+    if (this.z > 0) {
       this.z -= speed;
     }
     else {
@@ -108,7 +109,8 @@ function populatePoints() {
   }
   for (let i = 0; i < sections.length; i++) {
     var C = - 2 + (Math.floor(Math.random() * 4));
-    var S = - 5 + (Math.floor(Math.random() * 12));
+    var S = - 5 + (Math.floor(Math.random() * 12));   
+
     var newC = 0;
     var newS = 0;
     for (let j = 0; j < sections[i]; j++) {
@@ -119,6 +121,7 @@ function populatePoints() {
       var bX = [-900, 500][Math.floor(Math.random() * 2)];
       var rR;
       bX === -900 ? rR = true : rR = false;
+      
       var bS = 2 + Math.floor(Math.random() * 14);
       j < sections[i] / 2 ? newC += C : newC -= C;
       j < sections[i] / 2 ? newS += S : newS -= S;
@@ -127,7 +130,6 @@ function populatePoints() {
       newZ += 120
     }
   }
-  console.log(points)
 }
 
 function calculateDY(FOV) {
@@ -138,7 +140,7 @@ function calculateDY(FOV) {
 function drawRoad() {
   for (let i = 1; i < points.length; i++) {
     if (points[i].z < 5200) {
-      i % 5 === 0 ? ctx.fillStyle = "#969696" : ctx.fillStyle = "#969696";
+      ctx.fillStyle = "#969696";
       ctx.beginPath();
       ctx.moveTo((canvas.width - points[i].length) / 2 - points[i].curve + points[i].offset, points[i].y - points[i].slope);
       ctx.lineTo((canvas.width - points[i].length) / 2 + points[i].length - points[i].curve + points[i].offset, points[i].y - points[i].slope);
@@ -228,17 +230,22 @@ function drawTrees() {
 function drawBoars() {
   for (let i = 0; i < points.length; i++) {
     if (i % 7 === 0 && points[i].z < 2200 && points[i].z > 100) {
-      points[i].runRight === true 
-      //? ctx.drawImage(boarSpriteR, 768, 0, 192, 192, canvas.width / 2 + points[i].boarX + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
-      //: ctx.drawImage(boarSprite, 0, 0, 192, 192, canvas.width / 2 + points[i].boarX + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
-      ? ctx.drawImage(boarSpriteR, 768, 0, 192, 192, canvas.width / 2 + (points[i].boarX * points[i].scale) + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
-      : ctx.drawImage(boarSprite, 0, 0, 192, 192, canvas.width / 2 + (points[i].boarX * points[i].scale) + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
+      points[i].hasBoar = true;
+      points[i].runRight === true
+        ? ctx.drawImage(boarSpriteR, 768, 0, 192, 192, canvas.width / 2 + (points[i].boarX * points[i].scale) + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
+        : ctx.drawImage(boarSprite, 0, 0, 192, 192, canvas.width / 2 + (points[i].boarX * points[i].scale) + points[i].offset - points[i].curve, points[i].y - points[i].slope - (200 * points[i].scale), 192 * points[i].scale * 2, 192 * points[i].scale * 2)
     }
   }
 }
 
-var dY = calculateDY(camera.FOV);
+function checkCollision() {
+  for (let i = 0; i < points.length; i++) {
+    var checkBoar = canvas.width / 2 + (points[i].boarX * points[i].scale) + points[i].offset - points[i].curve;
+    if (points[i].z < 250 && points[i].z > 100 && points[i].hasBoar == true && checkBoar > 300 && checkBoar < 400) console.log("hit")    
+  }
+}
 
+var dY = calculateDY(camera.FOV);
 populatePoints();
 
 function animate() {
@@ -251,6 +258,7 @@ function animate() {
   drawTrees();
   drawRoad();
   drawBoars();
+  checkCollision();
   ctx.drawImage(carSprite, 510, 250, 180, 180);
   requestAnimationFrame(animate);
 }
